@@ -240,7 +240,17 @@ void loopPrincipal(void* arg){
                     if(ModoDeJogo==Computador) reverter_lance(controle_lances, pecas_tabuleiro, turno);
                     break;
                 case 'x': mostrar_FEN(controle_lances); break;
-                case 'i': ModoDeJogo=Computador; break;
+                case 'i': 
+                    if(ModoDeJogo==Player){
+                        ModoDeJogo=Computador;
+                        printf("Jogando contra Maquina\n");
+                    }
+                    else{
+                        ModoDeJogo=Player;
+                        printf("Jogando contra Player\n");
+                    }
+                break;
+
                 case 'c': ModoDeJogo=Computador; lance_da_ia=1; break;
                 case 'v': ModoDeJogo=Computador; lance_da_ia=1; turno = turno==White? Black : White; break;
                 //case ']': 
@@ -306,8 +316,8 @@ int main(int argc, char* argv[]){
 	SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer);
     iniciar_imagens(&renderer, imagens);
 
-    inicio_x=30;
-	inicio_y=50;
+    inicio_x=80;
+	inicio_y=10;
 	casas_por_linha = 8;
 	tam_quadrado = 60;
 
