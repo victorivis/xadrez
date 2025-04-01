@@ -1,5 +1,7 @@
 #include "pecas.h"
 
+int debugLances=false;
+
 char calcular_destino(int direcao, std::pair<char, char> origem, std::vector<std::vector<char>>& tabuleiro, int num_movimentos){
 	switch(direcao){
 		case Norte:
@@ -51,7 +53,7 @@ char calcular_destino(int direcao, std::pair<char, char> origem, std::vector<std
 			return tabuleiro[origem.first+1][origem.second-2];
 		
 		default:
-			printf("Erro! direcao impossivel: %d\n", direcao);
+			if(debugLances) printf("Erro! direcao impossivel: %d\n", direcao);
 			exit(1);
 	}
 
@@ -60,10 +62,10 @@ char calcular_destino(int direcao, std::pair<char, char> origem, std::vector<std
 
 void executar_lance(std::vector<std::vector<char>>& tabuleiro, Lance& lance, std::vector<FEN>* controle_lances){
 	//Previne de acessar memoria indevida
-	if(lance.src_i<0 || lance.src_i>=tabuleiro.size()) printf("%d %d %d %d\n", lance.src_i, lance.src_j, lance.dst_i, lance.dst_j), exit(404);
-	if(lance.src_j<0 || lance.src_j>=tabuleiro.size()) printf("%d %d %d %d\n", lance.src_i, lance.src_j, lance.dst_i, lance.dst_j), exit(404);
-	if(lance.dst_i<0 || lance.dst_i>=tabuleiro.size()) printf("%d %d %d %d\n", lance.src_i, lance.src_j, lance.dst_i, lance.dst_j), exit(404);
-	if(lance.dst_j<0 || lance.dst_j>=tabuleiro.size()) printf("%d %d %d %d\n", lance.src_i, lance.src_j, lance.dst_i, lance.dst_j), exit(404);
+	if(lance.src_i<0 || lance.src_i>=tabuleiro.size()) if(debugLances) printf("%d %d %d %d\n", lance.src_i, lance.src_j, lance.dst_i, lance.dst_j), exit(404);
+	if(lance.src_j<0 || lance.src_j>=tabuleiro.size()) if(debugLances) printf("%d %d %d %d\n", lance.src_i, lance.src_j, lance.dst_i, lance.dst_j), exit(404);
+	if(lance.dst_i<0 || lance.dst_i>=tabuleiro.size()) if(debugLances) printf("%d %d %d %d\n", lance.src_i, lance.src_j, lance.dst_i, lance.dst_j), exit(404);
+	if(lance.dst_j<0 || lance.dst_j>=tabuleiro.size()) if(debugLances) printf("%d %d %d %d\n", lance.src_i, lance.src_j, lance.dst_i, lance.dst_j), exit(404);
 	
 	char origem = tabuleiro[lance.src_i][lance.src_j];
 	int roque=0;
@@ -84,7 +86,7 @@ void executar_lance(std::vector<std::vector<char>>& tabuleiro, Lance& lance, std
 					executar_lance(tabuleiro, mover_lado, controle_lances);
 					lance.src_j = j;
 
-					printf("Aconteceu En Passant\n");
+					if(debugLances) printf("Aconteceu En Passant\n");
 				}
 			}	
 		}
@@ -133,7 +135,7 @@ void executar_lance(std::vector<std::vector<char>>& tabuleiro, Lance& lance, std
 
 		Lance torre = {origem_torre.first, origem_torre.second, destino_torre.first, destino_torre.second};
 		executar_lance(tabuleiro, torre, controle_lances);
-		printf("Rei Rocou! Esquerda\n");
+		if(debugLances) printf("Rei Rocou! Esquerda\n");
 	}
 	else if(roque==Leste){
 		std::pair<char, char> origem_rei = {lance.src_i, lance.src_j};
@@ -148,7 +150,7 @@ void executar_lance(std::vector<std::vector<char>>& tabuleiro, Lance& lance, std
 
 		Lance torre = {origem_torre.first, origem_torre.second, destino_torre.first, destino_torre.second};
 		executar_lance(tabuleiro, torre, controle_lances);
-		printf("Rei Rocou! Direita\n");
+		if(debugLances) printf("Rei Rocou! Direita\n");
 	}
 
 	//Promocao de peao
@@ -366,7 +368,7 @@ bool movimento_permitido(int direcao, int tipo_lance, std::vector<std::vector<ch
 			}
 		}
 		else{
-			printf("Lance nao previsto");
+			if(debugLances) printf("Lance nao previsto");
 			exit(1);
 		}
 	}
@@ -511,7 +513,7 @@ void sequencia_lances(std::vector<char>& direcoes, std::pair<char, char> origem,
 				contador+=1;
 			}
 			if(movimento_permitido(direcoes[i], Roque, tabuleiro, origem, contador, controle_lances)){
-				printf("Roque possivel!\n");
+				if(debugLances) printf("Roque possivel!\n");
 				lances.push_back(mover_direcao(direcoes[i], origem, 2));
 			}
 		}
@@ -564,7 +566,7 @@ void sequencia_lances(std::vector<char>& direcoes, std::pair<char, char> origem,
 			executar_lance(tabuleiro, copia_lance, controle_lances);
 			
 			if(EstaEmCheque(tabuleiro, turno)){
-				for(int p=0; p<10; p++) printf("Entrou no Xeque\n");
+				if(debugLances) printf("Entrou no Xeque\n");
 				lances.erase(lances.begin()+i);
 				i--;
 			}
@@ -723,7 +725,7 @@ void reverter_lance(std::vector<FEN>& controle_lances, std::vector<std::vector<c
 
 		//printf("Ultima peca: %d %d\n", ultima_peca, penultima_peca);
 		if(branco(ultima_peca) == branco(penultima_peca)){
-			printf("Reverter Dois Lances\n");
+			if(debugLances) printf("Reverter Dois Lances\n");
 			reverter_lance(controle_lances, pecas_tabuleiro, pseudo_turno);
 			posicao--;
 		}

@@ -4,6 +4,7 @@
 #include <cstdio>
 #include "pecas.h"
 #include "visual.h"
+#include "ia.h"
 
 #ifndef LOCAL
 
@@ -21,16 +22,8 @@ SDL_Renderer* renderer = NULL;
 const int WIDTH = 1000;
 const int HEIGHT = 600;
 
-int delay = 100;
+int delay = 80;
 bool rodar=true;
-
-std::vector<std::vector<SDL_Rect>> tabuleiro;
-std::vector<std::vector<char>> pecas_tabuleiro;
-
-std::vector<Lance> lances;
-std::vector<Lance> lances_clicado;
-std::vector<FEN> controle_lances;
-std::vector<SDL_Texture*> imagens;
 
 enum Modo{
     Player, Computador, FimDeJogo
@@ -44,10 +37,19 @@ enum Clique{
 	Selecionar, Executar
 };
 
-int ModoDeJogo=Player;
+std::vector<std::vector<SDL_Rect>> tabuleiro;
+std::vector<std::vector<char>> pecas_tabuleiro;
+
+std::vector<Lance> lances;
+std::vector<Lance> lances_clicado;
+std::vector<FEN> controle_lances;
+std::vector<SDL_Texture*> imagens;
+
 bool inverter=false;
 bool sentido_brancas=true;
 int turno = White;
+int lance_da_ia=0;
+int ModoDeJogo=Computador;
 
 //Acho que isso da para deixar local
 int inicio_x;
@@ -118,8 +120,79 @@ void operacoes_clicar(int i, int j, std::vector<Lance>& lances_clicado,
 	}
 }
 
+int jogar_computador(int i, int j, std::vector<Lance>& lances_clicado, 
+	std::vector<std::vector<char>>& pecas_tabuleiro, std::vector<FEN>& controle_lances, int& turno){
+	static int clique = Selecionar;
+	int peca = pecas_tabuleiro[i][j];
+
+	bool cor_valida=true;
+
+	if(turno == White){
+		cor_valida = branco(peca);
+	}
+	else if(turno == Black){
+		cor_valida = preto(peca);
+	}
+
+	printf("i: %d j: %d\n", i, j);
+	//playSound(sound);
+	
+	if(clique == Selecionar){
+		printf("Selecionar\n");
+		limpar_lances(lances_clicado);
+		if(cor_valida && peca!=Vazio && peca!=Agua){
+			lances_clicado = possiveis_lances_peca({i, j}, pecas_tabuleiro, &controle_lances);
+			imprimir_lances(lances_clicado);
+			clique = Executar;
+		}
+	}
+	else if(clique == Executar){
+		printf("Executar\n");
+		printf("total lances_clicado: %d\n", (int) lances_clicado.size());
+		bool executado=false;
+		for(int contador=0; contador<lances_clicado.size(); contador++){
+			if(lances_clicado[contador].dst_i == i && lances_clicado[contador].dst_j == j){
+				printf("Execuntando lance\n");
+				executado = true;
+
+				//int org_i = lances_clicado[contador].src_i;
+				//int org_j = lances_clicado[contador].src_j;
+				//controle_lances.push_back({lances_clicado[contador], pecas_tabuleiro[i][j], pecas_tabuleiro[org_i][org_j]});
+				
+				executar_lance(pecas_tabuleiro, lances_clicado[contador], &controle_lances);
+				if(turno==White) turno=Black;
+				else if(turno==Black) turno=White;
+
+				if(EstaEmCheque(pecas_tabuleiro, turno)){
+					printf("Cheque\n");
+				}
+				break;
+			}
+		}
+
+		limpar_lances(lances_clicado);
+		clique = Selecionar;
+
+		//Seleciona peca clicada se nao tiver executado um lance no ultimo clique
+		if(executado==false){
+			operacoes_clicar(i, j, lances_clicado, pecas_tabuleiro, controle_lances, turno);
+		}
+		else{
+			int pseudo_turno = turno==White ? Black : White;
+			turno = turno==White ? Black : White;
+			return 1;
+		}
+	}
+	return 0;
+}
+
 void loopPrincipal(void* arg){
-    static int sequenciaDirecoes[4] = {2,3,1,0};
+    if(lance_da_ia==1){
+        int pseudo_turno= turno;//==White? Black : White;
+        executar_lance_ia(controle_lances, pecas_tabuleiro, pseudo_turno);
+        //turno = turno==White ? Black : White;
+        lance_da_ia = 0;
+    }
 
     while(SDL_PollEvent(&evento)){
         if(evento.type == SDL_QUIT){
@@ -164,6 +237,9 @@ void loopPrincipal(void* arg){
                     if(ModoDeJogo==Computador) reverter_lance(controle_lances, pecas_tabuleiro, turno);
                     break;
                 case 'x': mostrar_FEN(controle_lances); break;
+                case 'i': ModoDeJogo=Computador; break;
+                case 'c': ModoDeJogo=Computador; lance_da_ia=1; break;
+                case 'v': ModoDeJogo=Computador; lance_da_ia=1; turno = turno==White? Black : White; break;
                 //case ']': 
                 //    do{
                 //        SDL_PollEvent(&evento);
@@ -189,7 +265,7 @@ void loopPrincipal(void* arg){
                 if(inverter) i = pecas_tabuleiro.size()-1-i;
                 
                 if (ModoDeJogo==Player) operacoes_clicar(i, j, lances_clicado, pecas_tabuleiro, controle_lances, turno);
-                //else if(ModoDeJogo==Computador) lance_da_ia = jogar_computador(i, j, lances_clicado, pecas_tabuleiro, controle_lances, turno);
+                else if(ModoDeJogo==Computador) lance_da_ia = jogar_computador(i, j, lances_clicado, pecas_tabuleiro, controle_lances, turno);
             }
         }
     }    
@@ -217,15 +293,6 @@ void loopPrincipal(void* arg){
     }
     
     SDL_RenderPresent(renderer);
-    
-    /*
-    if(lance_da_ia==1){
-        int pseudo_turno= turno;//==White? Black : White;
-        executar_lance_ia(controle_lances, pecas_tabuleiro, pseudo_turno);
-        //turno = turno==White ? Black : White;
-        lance_da_ia = 0;
-    }
-    */
 
     SDL_Delay(delay);
 }
