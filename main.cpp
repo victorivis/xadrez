@@ -220,6 +220,9 @@ void loopPrincipal(void* arg){
                     break;
 
                 case 'k':
+                    if(ModoDeJogo==Computador){
+                        turno = turno==White? Black : White;
+                    }
                     lances = todos_possiveis_lances(pecas_tabuleiro, turno, &controle_lances);
                     if(lances.size()!=0){
                         executar_lance(pecas_tabuleiro, lances[rand()%lances.size()], &controle_lances);
