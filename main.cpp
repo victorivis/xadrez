@@ -164,10 +164,11 @@ void loopPrincipal(void* arg){
                     if(ModoDeJogo==Computador) reverter_lance(controle_lances, pecas_tabuleiro, turno);
                     break;
                 case 'x': mostrar_FEN(controle_lances); break;
-                case ']': 
-                    do{
-                        SDL_PollEvent(&evento);
-                    } while(evento.type != SDL_KEYDOWN);
+                //case ']': 
+                //    do{
+                //        SDL_PollEvent(&evento);
+                //        SDL_Delay(delay);
+                //    } while(evento.type != SDL_KEYDOWN);
                 //case 'v':
                 //    printf("Valor posicao: %d\n", avaliacao_posicao(pecas_tabuleiro)); break;
                 //case 'r': printf("valor da posicao: %d\n", avaliacao_posicao(pecas_tabuleiro)); break;
@@ -181,8 +182,6 @@ void loopPrincipal(void* arg){
             int bool_x=0, bool_y=0;
             if(pos_x <= final_x && pos_x >= inicio_x) bool_x=1;
             if(pos_y <= final_y && pos_y >= inicio_y) bool_y=1;
-
-            printf("(%d, %d), {%d, %d}\n", pos_x, pos_y, bool_x, bool_y);
 
             if(bool_x && bool_y){
                 int j = (pos_x-inicio_x)/tam_quadrado;

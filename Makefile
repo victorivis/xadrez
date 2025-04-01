@@ -13,10 +13,10 @@ wincpp: $(FILES)
 	g++ $(FILES) $(LIBS) -o build/saida.exe
 
 webcpp: $(FILES)
-	em++ $(FILES) $(WEBLIBS) -o build/saida.html
+	em++ $(FILES) $(WEBLIBS) -o build/index.js
 
 winrun: wincpp
 	build/saida.exe
 
 webrun: webcpp
-	emrun build/saida.html
+	emrun build/index.html
