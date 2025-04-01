@@ -196,7 +196,7 @@ void loopPrincipal(void* arg){
 
     SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
     SDL_RenderClear(renderer);
-    desenhar_tabuleiro(&renderer, tabuleiro, true);
+    desenhar_tabuleiro(&renderer, tabuleiro, false);
     if(sentido_brancas){
         for(int i=0; i<pecas_tabuleiro.size(); i++){
             for(int j=0; j<pecas_tabuleiro[i].size(); j++){
