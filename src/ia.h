@@ -16,4 +16,4 @@ enum valor_pecas{
 int retorna_valor(char peca);
 int avaliacao_posicao(std::vector<std::vector<char>>& pecas_tabuleiro);
 Lance minmax(std::vector<FEN>& controle_lances, std::vector<std::vector<char>>& pecas_tabuleiro, int& turno, bool max);
-void executar_lance_ia(std::vector<FEN>& controle_lances, std::vector<std::vector<char>>& pecas_tabuleiro, int& turno);
+bool executar_lance_ia(std::vector<FEN>& controle_lances, std::vector<std::vector<char>>& pecas_tabuleiro, int& turno);

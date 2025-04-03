@@ -12,8 +12,6 @@
 #define destino_igual(lance, par) (lance.dst_i == par.first && lance.dst_j == par.second)
 #define par_igual(par1, par2) (par1.first == par2.first && par1.second == par2.second)
 
-extern int debugLances;
-
 struct Lance{
 	char src_i;
 	char src_j;
@@ -26,6 +24,9 @@ struct FEN{
 	char peca;
 	char origem;
 };
+
+extern int debugLances;
+extern Lance marcarUltimoLance;
 
 enum Cor{
 	Black, White, Both, Neither

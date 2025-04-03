@@ -5,6 +5,8 @@
 #include <cstdio>
 #include "pecas.h"
 
+void mostrar(SDL_Rect& rect);
+void highlight_ultimo_lance(SDL_Renderer** renderer, SDL_Rect& posicao, SDL_Color cor={255, 255, 0, 120});
 void highlight_proximo_lance(SDL_Renderer** renderer, SDL_Rect posicao, bool capturar);
 void highlight_possiveis_lances(SDL_Renderer** renderer, std::vector<Lance>& lances, std::vector<std::vector<char>>& pecas_tabuleiro, std::vector<std::vector<SDL_Rect>>& quadrado_tabuleiro, bool inverter);
 

@@ -1,6 +1,7 @@
 #include "pecas.h"
 
 int debugLances=false;
+Lance marcarUltimoLance;
 
 char calcular_destino(int direcao, std::pair<char, char> origem, std::vector<std::vector<char>>& tabuleiro, int num_movimentos){
 	switch(direcao){
@@ -68,6 +69,7 @@ void executar_lance(std::vector<std::vector<char>>& tabuleiro, Lance& lance, std
 	if(lance.dst_j<0 || lance.dst_j>=tabuleiro.size()) if(debugLances) printf("%d %d %d %d\n", lance.src_i, lance.src_j, lance.dst_i, lance.dst_j), exit(404);
 	
 	char origem = tabuleiro[lance.src_i][lance.src_j];
+
 	int roque=0;
 
 	if(controle_lances != NULL && (*controle_lances).size()>1){

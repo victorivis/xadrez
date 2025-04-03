@@ -1,11 +1,26 @@
 #include "visual.h"
 
+void mostrar(SDL_Rect& rect){
+    printf("{x: %d, y: %d, w: %d, h: %d}\n", rect.x, rect.y, rect.w, rect.h);
+}
+
+void highlight_ultimo_lance(SDL_Renderer** renderer, SDL_Rect& posicao, SDL_Color cor){
+	SDL_SetRenderDrawColor(*renderer, cor.r, cor.g, cor.b, cor.a);
+
+	//posicao.x += posicao.w/4;
+	//posicao.y += posicao.h/4;
+	//posicao.w/=2;
+	//posicao.h/=2;
+
+	SDL_RenderFillRect(*renderer, &posicao);
+}
+
 void highlight_proximo_lance(SDL_Renderer** renderer, SDL_Rect posicao, bool capturar){
 	if(capturar){
-		SDL_SetRenderDrawColor(*renderer, 255, 0, 0, 180);
+		SDL_SetRenderDrawColor(*renderer, 255, 0, 0, 200);
 	}
 	else{
-		SDL_SetRenderDrawColor(*renderer, 180, 180, 180, 180);
+		SDL_SetRenderDrawColor(*renderer, 180, 180, 180, 200);
 	}
 
 	posicao.x += posicao.w/4;
@@ -62,7 +77,7 @@ void mostrar_posicoes_tabuleiro(std::vector<std::vector<SDL_Rect>>& tabuleiro){
 }
 
 SDL_Texture* desenhar_peca(SDL_Renderer** renderer, char peca){
-    std::string caminho = "assets/pecasBMP/";
+    std::string caminho = "./assets/pecasBMP/";
     std::string extensao = ".bmp";
     std::string nome_peca;
 
