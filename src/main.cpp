@@ -20,8 +20,8 @@ SDL_Event evento;
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
-const int WIDTH = 1000;
-const int HEIGHT = 600;
+const int WIDTH = 600;
+const int HEIGHT = 540;
 
 int delay = 80;
 bool rodar=true;
@@ -303,8 +303,8 @@ int main(int argc, char* argv[]){
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND); //Permite transparencia
     iniciar_imagens(&renderer, imagens);   
 
-    inicio_x=80;
-	inicio_y=10;
+    inicio_x=60;
+	inicio_y=30;
 	casas_por_linha = 8;
 	tam_quadrado = 60;
 
@@ -324,7 +324,7 @@ int main(int argc, char* argv[]){
 		{WhiteStaticRook, WhiteKnight, WhiteBishop, WhiteQueen, WhiteStaticKing, WhiteBishop, WhiteKnight, WhiteStaticRook},
 	};
 
-    printf("Seu turno\n");
+    printf("> Seu turno\n");
     inicializarAudio();
     
     #ifndef LOCAL        

@@ -11,7 +11,7 @@ linuxcpp: $(FILES)
 	g++ $(FILES) $(LINUXLIBS) -o saida.out
 
 webcpp: $(FILES)
-	em++ $(FILES) $(WEBLIBS) -o index.html
+	em++ $(FILES) $(WEBLIBS) -o index.js
 
 winrun: wincpp
 	./saida.exe
