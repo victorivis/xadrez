@@ -90,7 +90,7 @@ canvas.emscripten { border: 0px none; background-color: black; }
 }
 
 #output {
-  width: calc(869.61px + 149.95px);
+  width: calc(869.61px + 50.36px + 2px);
   height: 147px;
   margin: 0 auto;
   margin-top: 1px;
@@ -112,6 +112,7 @@ canvas.emscripten { border: 0px none; background-color: black; }
     flex-direction: column;
     align-items: center;
     border-left: 0px;
+    gap: 10px;
     border: 1px solid black;
     padding: 8px;
 }
@@ -146,13 +147,14 @@ canvas.emscripten { border: 0px none; background-color: black; }
       display: flex;
       flex-direction: row;
       align-items: center;
+      justify-content: center;
       border: 1px solid black;
       padding: 8px;
-      width: calc(879.61px - 2 * 8px - 1px);
+      width: calc(879.61px - 2 * 8px - 2px);
     }
 
     #output {
-      width: calc(879.61px - 8px);
+      width: calc(879.61px - 8px - 2px);
     }
 }
 
@@ -186,7 +188,6 @@ canvas.emscripten { border: 0px none; background-color: black; }
             </div>
         </span>
         <div id="virtual-keyboard">
-          <h3>Teclado virtual</h3>
           <button data-key="z">z</button>
           <button data-key="i">i</button>
           <button data-key="v">v</button>
