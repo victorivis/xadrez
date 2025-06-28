@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Emscripten-Generated Code</title>
-    <style>body {
+    <style>
+
+body {
   font-family: arial;
   margin: 0;
   padding: none;
@@ -88,7 +90,7 @@ canvas.emscripten { border: 0px none; background-color: black; }
 }
 
 #output {
-  width: 869.61px;
+  width: calc(869.61px + 149.95px);
   height: 147px;
   margin: 0 auto;
   margin-top: 1px;
@@ -103,6 +105,24 @@ canvas.emscripten { border: 0px none; background-color: black; }
   outline: none;
   overflow-y: hidden;
   resize: none;
+}
+
+#virtual-keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-left: 0px;
+    border: 1px solid black;
+    padding: 8px;
+}
+
+#virtual-keyboard button {
+    margin-bottom: 4px;
+    width: 32px;
+    text-align: center;
+    font-size: 16px;
+    padding: 2px 0;
+    cursor: pointer;
 }
 
 @media (max-width: 879.61px) {
@@ -121,7 +141,22 @@ canvas.emscripten { border: 0px none; background-color: black; }
     }
 }
 
-</style>
+@media (max-width: 1035px) {
+    #virtual-keyboard {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      border: 1px solid black;
+      padding: 8px;
+      width: calc(879.61px - 2 * 8px - 1px);
+    }
+
+    #output {
+      width: calc(879.61px - 8px);
+    }
+}
+
+  </style>
   </head>
   <body>
     <div class="spinner" id='spinner'></div>
@@ -133,21 +168,38 @@ canvas.emscripten { border: 0px none; background-color: black; }
 
     <div id="game">
         <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
-        <span id="controls">
-            <h3>Controles</h3>
-            <p><strong>z</strong> Desfazer o último lance</p>
-            <p><strong>i</strong> Desligar/Ligar IA</p>
-            <p><strong>v</strong> Realizar Lance da IA</p>            
-            <p><strong>x</strong> Mostrar histórico de lances</p>
-            <p><strong>l</strong> Listar todos os lances possiveis</p>
-            <p><strong>k</strong> Realizar lance aleatório</p>
-            <p><strong>o</strong> Inverter exibicao do tabuleiro</p>
-            <p><strong>w</strong> Trocar posicoes metade esquerda</p>
-            <p><strong>a</strong> Trocar posicoes na vertical</p>
-            <p><strong>d</strong> Trocar posicoes na vertical</p>
-            <p><strong>s</strong> Trocar posicoes metade de cima</p>
-            <p><strong>c</strong> Realizar lance do turno oposto</p>
+        <span id="controls" style="display: flex; flex-direction: row; align-items: flex-start;">
+            <div>
+                <h3>Controles</h3>
+                <p><strong>z</strong> Desfazer o último lance</p>
+                <p><strong>i</strong> Desligar/Ligar IA</p>
+                <p><strong>v</strong> Realizar Lance da IA</p>            
+                <p><strong>x</strong> Mostrar histórico de lances</p>
+                <p><strong>l</strong> Listar todos os lances possiveis</p>
+                <p><strong>k</strong> Realizar lance aleatório</p>
+                <p><strong>o</strong> Inverter exibicao do tabuleiro</p>
+                <p><strong>w</strong> Trocar posicoes metade esquerda</p>
+                <p><strong>a</strong> Trocar posicoes na vertical</p>
+                <p><strong>d</strong> Trocar posicoes na vertical</p>
+                <p><strong>s</strong> Trocar posicoes metade de cima</p>
+                <p><strong>c</strong> Realizar lance do turno oposto</p>
+            </div>
         </span>
+        <div id="virtual-keyboard">
+          <h3>Teclado virtual</h3>
+          <button data-key="z">z</button>
+          <button data-key="i">i</button>
+          <button data-key="v">v</button>
+          <button data-key="x">x</button>
+          <button data-key="l">l</button>
+          <button data-key="k">k</button>
+          <button data-key="o">o</button>
+          <button data-key="w">w</button>
+          <button data-key="a">a</button>
+          <button data-key="d">d</button>
+          <button data-key="s">s</button>
+          <button data-key="c">c</button>
+        </div>
     </div>
     <textarea id="output" rows="8"></textarea>
     
@@ -224,5 +276,44 @@ canvas.emscripten { border: 0px none; background-color: black; }
       };
     </script>
     <script async type="text/javascript" src="index.js"></script>
+    <script type='text/javascript'>
+// Teclado virtual: dispara eventos de teclado ao clicar nos botões
+document.addEventListener('DOMContentLoaded', function() {
+    var canvas = document.getElementById('canvas');
+    // Mapeamento das teclas para seus keyCode SDL2 (códigos ASCII)
+    var keyMap = {
+        'z': 90,
+        'i': 73,
+        'v': 86,
+        'x': 88,
+        'l': 76,
+        'k': 75,
+        'o': 79,
+        'w': 87,
+        'a': 65,
+        'd': 68,
+        's': 83,
+        'c': 67
+    };
+    document.querySelectorAll('#virtual-keyboard button').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const key = btn.getAttribute('data-key');
+            if (canvas) canvas.focus();
+            // Cria o evento com key, code e keyCode para máxima compatibilidade SDL2
+            const event = new KeyboardEvent('keydown', {
+                key: key,
+                code: 'Key' + key.toUpperCase(),
+                keyCode: keyMap[key],
+                which: keyMap[key],
+                bubbles: true
+            });
+            // Para browsers modernos, keyCode/which são read-only, então forçamos via defineProperty
+            Object.defineProperty(event, 'keyCode', { get: function() { return keyMap[key]; } });
+            Object.defineProperty(event, 'which', { get: function() { return keyMap[key]; } });
+            canvas.dispatchEvent(event);
+        });
+    });
+});
+    </script>
   </body>
 </html>
